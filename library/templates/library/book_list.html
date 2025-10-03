@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to the Django Library Application</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Inter', Arial;
+            background-color: #f8f8f8;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #ff9a9a;
+            padding: 30px;
+            border-radius: 11px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #013981;
+            border-bottom: 2px solid #d71414;
+            padding-bottom: 10px;
+            margin-top: 25px;
+            font-size: 28px;
+           
+        }
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            color:#000000;
+           font-family: 'Poppins', serif; 
+        }
+
+        /* Category List Styling (Links) */
+        .categories-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        /* Style the anchor tag to look like a button */
+        .category-item {
+            text-decoration: none; 
+            color: #004caf;
+            background-color: #e8f0fe;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid #1a73e8;
+        }
+        .category-item:hover {
+            background-color: #c4daff;
+            color: #0d47a1;
+        }
+        .category-item.active {
+            background-color: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+        .reset-link {
+            text-decoration: none;
+            margin-left: 20px;
+            color: #757575;
+            font-size: 0.8em;
+        }
+        .reset-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Book List Styling */
+        .book-item {
+            border: 1px solid #960303;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: #ffffff;
+            transition: box-shadow 0.3s ease;
+        }
+        .book-item:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+        .book-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .book-author {
+            font-style: italic;
+            color: #757575;
+            margin-bottom: 10px;
+        }
+        .book-details {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .genre-tag {
+            display: inline-block;
+            background-color: #f1f1f1;
+            color: #333;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-right: 5px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 20px;
+            background-color: #fff3cd;
+            color: #664d03;
+            border: 1px solid #ffecb5;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Django Library Application</h1>
+
+        <!-- Title based on Filter State -->
+        {% if current_category_id %}
+            <h2>Category: {{ filter_title }} <a href="{% url 'book_list' %}" class="reset-link">(View All)</a></h2>
+        {% else %}
+            <h2>All Books ({{ books|length }})</h2>
+        {% endif %}
+
+        <!-- Display Categories with Clickable Links -->
+        <h3>Available Categories ({{ categories|length }})</h3>
+        <div class="categories-list">
+            {% for category in categories %}
+                <a href="{% url 'filter_by_category' category.id %}"
+                   class="category-item {% if category.id == current_category_id %}active{% endif %}">
+                    {{ category.name }}
+                </a>
+            {% empty %}
+                <p class="empty-state">No categories have been added yet.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Display Books -->
+        <div class="book-list">
+            {% for book in books %}
+                <div class="book-item">
+                    <div class="book-title">{{ book.title }}</div>
+                    <div class="book-author">by {{ book.author.name }}</div>
+                    <div class="book-details">
+                        Published: {{ book.published|date:"F j, Y" }}<br>
+                        Genres:
+                        {% for category in book.categories.all %}
+                            <span class="genre-tag">{{ category.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% empty %}
+                <p class="empty-state">No books found matching the current criteria.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
